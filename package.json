@@ -1,7 +1,7 @@
 {
-  "name": "@cross2d/react-native-web",
-  "version": "0.1.5",
-  "description": "React Native for Web",
+  "name": "@cross2d/react-native-node",
+  "version": "0.0.5",
+  "description": "React Native for NodeJS",
   "main": "dist/index.js",
   "files": [
     "dist",
@@ -25,6 +25,7 @@
   "dependencies": {
     "animated": "^0.2.0",
     "array-find-index": "^1.0.2",
+    "autobind-decorator": "^2.1.0",
     "babel-runtime": "^6.23.0",
     "create-react-class": "^15.5.2",
     "debounce": "1.0.2",
@@ -34,8 +35,8 @@
     "inline-style-prefixer": "^3.0.2",
     "normalize-css-color": "^1.0.2",
     "prop-types": "^15.5.8",
-    "react-timer-mixin": "^0.13.3",
-    "react-mixin": "^3.0.5"
+    "react-mixin": "^3.0.5",
+    "react-timer-mixin": "^0.13.3"
   },
   "devDependencies": {
     "@kadira/storybook": "^2.5.1",
@@ -56,9 +57,9 @@
     "jest": "^19.0.2",
     "node-libs-browser": "^0.5.3",
     "prettier": "^1.2.2",
-    "react": "~15.4.1",
+    "react": "^15.4.2",
     "react-addons-test-utils": "~15.4.1",
-    "react-dom": "~15.4.1",
+    "react-dom": "^15.4.2",
     "react-test-renderer": "^15.5.4",
     "url-loader": "^0.5.8",
     "webpack": "^2.3.3",
@@ -68,11 +69,11 @@
     "react": "15.4.x || 15.5.x",
     "react-dom": "15.4.x || 15.5.x"
   },
-  "author": "Nicolas Gallagher",
+  "author": "Colin3dmax",
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "git://github.com/necolas/react-native-web.git"
+    "url": "git://github.com/cross2d/react-native-node.git"
   },
   "tags": [
     "react"
@@ -81,7 +82,9 @@
     "react",
     "react-component",
     "react-native",
-    "web"
+    "web",
+    "node",
+    "nodejs"
   ],
   "jest": {
     "testEnvironment": "jsdom",

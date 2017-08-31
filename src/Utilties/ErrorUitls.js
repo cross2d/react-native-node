@@ -83,6 +83,6 @@
   }
 
   setupErrorGuard();
-})(window);
+})(global || window);
 
 module.exports = ErrorUtils;
