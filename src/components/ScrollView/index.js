@@ -3,7 +3,11 @@
  * Copyright (c) 2015-present, Facebook, Inc.
  * All rights reserved.
  *
- * @flow
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @providesModule ScrollView
+ * @noflow
  */
 
 import createReactClass from 'create-react-class';
@@ -17,7 +21,7 @@ import StyleSheetPropType from '../../propTypes/StyleSheetPropType';
 import View from '../View';
 import ViewPropTypes from '../View/ViewPropTypes';
 import ViewStylePropTypes from '../View/ViewStylePropTypes';
-import React, { Component } from 'react';
+import React from 'react';
 import { bool, element, func, number, oneOf } from 'prop-types';
 
 const emptyObject = {};
@@ -54,7 +58,7 @@ const ScrollView = createReactClass({
    * implement this method so that they can be composed while providing access
    * to the underlying scroll responder's methods.
    */
-  getScrollResponder(): Component {
+  getScrollResponder(): ScrollView {
     return this;
   },
 
@@ -97,6 +101,25 @@ const ScrollView = createReactClass({
   },
 
   /**
+   * If this is a vertical ScrollView scrolls to the bottom.
+   * If this is a horizontal ScrollView scrolls to the right.
+   *
+   * Use `scrollToEnd({ animated: true })` for smooth animated scrolling,
+   * `scrollToEnd({ animated: false })` for immediate scrolling.
+   * If no options are passed, `animated` defaults to true.
+   */
+  scrollToEnd(options?: { animated?: boolean }) {
+    // Default to true
+    const animated = (options && options.animated) !== false;
+    const { horizontal } = this.props;
+    const scrollResponder = this.getScrollResponder();
+    const scrollResponderNode = scrollResponder.scrollResponderGetScrollableNode();
+    const x = horizontal ? scrollResponderNode.scrollWidth : 0;
+    const y = horizontal ? 0 : scrollResponderNode.scrollHeight;
+    scrollResponder.scrollResponderScrollTo({ x, y, animated });
+  },
+
+  /**
    * Deprecated, do not use.
    */
   scrollWithoutAnimationTo(y: number = 0, x: number = 0) {
@@ -114,6 +137,7 @@ const ScrollView = createReactClass({
       keyboardDismissMode,
       onScroll,
       pagingEnabled,
+      stickyHeaderIndices,
       /* eslint-enable */
       ...other
     } = this.props;
@@ -143,7 +167,7 @@ const ScrollView = createReactClass({
         children={this.props.children}
         collapsable={false}
         ref={this._setInnerViewRef}
-        style={[{flex:1},horizontal && styles.contentContainerHorizontal, contentContainerStyle]}
+        style={[horizontal && styles.contentContainerHorizontal, contentContainerStyle]}
       />
     );
 
@@ -244,4 +268,4 @@ const styles = StyleSheet.create({
   }
 });
 
-module.exports = ScrollView;
+export default ScrollView;

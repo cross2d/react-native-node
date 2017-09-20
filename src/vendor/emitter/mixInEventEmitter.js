@@ -23,7 +23,7 @@ import copyProperties from 'copyProperties';
 import invariant from 'fbjs/lib/invariant';
 import keyOf from 'fbjs/lib/keyOf';
 
-var TYPES_KEY = keyOf({__types: true});
+const TYPES_KEY = keyOf({__types: true});
 
 /**
  * API to setup an object or constructor to be able to emit data events.
@@ -52,9 +52,9 @@ function mixInEventEmitter(klass, types) {
 
   // If this is a constructor, write to the prototype, otherwise write to the
   // singleton object.
-  var target = klass.prototype || klass;
+  const target = klass.prototype || klass;
 
-  var ctor = klass.constructor;
+  const ctor = klass.constructor;
   if (ctor) {
     invariant(
       ctor === Object || ctor === Function,
@@ -121,10 +121,10 @@ var EventEmitterMixin = {
 
   __getEventEmitter: function () {
     if (!this.__eventEmitter) {
-      var emitter = new EventEmitter();
+      let emitter = new EventEmitter();
       emitter = EventValidator.addValidation(emitter, this.__types);
 
-      var holder = new EventHolder();
+      const holder = new EventHolder();
       this.__eventEmitter = new EventEmitterWithHolding(emitter, holder);
     }
     return this.__eventEmitter;

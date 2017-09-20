@@ -10,7 +10,8 @@
  */
 'use strict';
 
-import React, { PropTypes, Component } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import StyleSheet from '../../apis/StyleSheet';
 import View from '../View';
 
@@ -46,7 +47,7 @@ Modal.propTypes = {
   onDismiss: PropTypes.func,
 };
 
-let styles = StyleSheet.create({
+const styles = StyleSheet.create({
   modal: {
     position: 'fixed',
     left: 0,

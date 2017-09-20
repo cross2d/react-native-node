@@ -9,7 +9,7 @@ import { Mixin as NativeMethodsMixin } from './../../Utilties/NativeMethodsMixin
 import mixin from 'react-mixin';
 import autobind from 'autobind-decorator';
 
-let RefreshLayoutConsts = {SIZE: {}};
+const RefreshLayoutConsts = {SIZE: {}};
 
 class RefreshControl extends Component {
 

@@ -1,25 +1,26 @@
-/* eslint-disable */
 /**
-  * Copyright (c) 2015-present, Facebook, Inc.
-  * All rights reserved.
-  *
-  * This source code is licensed under the BSD-style license found in the
-  * LICENSE file in the root directory of this source tree. An additional grant
-  * of patent rights can be found in the PATENTS file in the same directory.
-  *
-  * @providesModule ColorPropType
-  */
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * @providesModule ColorPropType
+ * @flow
+ */
 
-var colorPropType = function(isRequired, props, propName, componentName, location, propFullName) {
-  var normalizeColor = require('normalize-css-color');
-  var ReactPropTypeLocationNames = require('../vendor/ReactPropTypeLocationNames');
-  var color = props[propName];
+const isWebColor = (color: string) =>
+  color === 'currentcolor' || color === 'inherit' || color.indexOf('var(') === 0;
+
+const colorPropType = function(isRequired, props, propName, componentName, location, propFullName) {
+  const normalizeColor = require('normalize-css-color');
+  const color = props[propName];
   if (color === undefined || color === null) {
     if (isRequired) {
-      var locationName = ReactPropTypeLocationNames[location];
       return new Error(
         'Required ' +
-          locationName +
+          location +
           ' `' +
           (propFullName || propName) +
           '` was not specified in `' +
@@ -37,15 +38,15 @@ var colorPropType = function(isRequired, props, propName, componentName, locatio
     return;
   }
 
-  if (color === 'currentcolor' || color === 'inherit') {
+  if (typeof color === 'string' && isWebColor(color)) {
+    // Web supports additional color keywords and custom property values. Ignore them.
     return;
   }
 
   if (normalizeColor(color) === null) {
-    var locationName = ReactPropTypeLocationNames[location];
     return new Error(
       'Invalid ' +
-        locationName +
+        location +
         ' `' +
         (propFullName || propName) +
         '` supplied to `' +
@@ -70,11 +71,13 @@ var colorPropType = function(isRequired, props, propName, componentName, locatio
   }
 };
 
+let ColorPropType;
+
 if (process.env.NODE_ENV !== 'production') {
-  var ColorPropType = colorPropType.bind(null, false /* isRequired */);
+  ColorPropType = colorPropType.bind(null, false /* isRequired */);
   ColorPropType.isRequired = colorPropType.bind(null, true /* isRequired */);
 } else {
-  var ColorPropType = function() {};
+  ColorPropType = function() {};
 }
 
-module.exports = ColorPropType;
+export default ColorPropType;

@@ -27,7 +27,7 @@ import copyProperties from 'copyProperties';
  * mistyped the event name it will suggest what you might have meant to type in
  * the error message.
  */
-var EventValidator = {
+const EventValidator = {
   /**
    * @param {Object} emitter - The object responsible for emitting the actual
    *                             events
@@ -39,8 +39,8 @@ var EventValidator = {
    *   var emitter = EventValidator.addValidation(emitter, types);
    */
   addValidation: function (emitter: Object, types: Object) {
-    var eventTypes = Object.keys(types);
-    var emitterWithValidation = Object.create(emitter);
+    const eventTypes = Object.keys(types);
+    const emitterWithValidation = Object.create(emitter);
 
     copyProperties(emitterWithValidation, {
       emit: function emit(type, a, b, c, d, e, _) {
@@ -60,7 +60,7 @@ function assertAllowsEventType(type, allowedTypes) {
 }
 
 function errorMessageFor(type, allowedTypes) {
-  var message = 'Unknown event type "' + type + '". ';
+  let message = 'Unknown event type "' + type + '". ';
   if (__DEV__) {
     message += recommendationFor(type, allowedTypes);
   }
@@ -71,7 +71,7 @@ function errorMessageFor(type, allowedTypes) {
 // Allow for good error messages
 if (__DEV__) {
   var recommendationFor = function (type, allowedTypes) {
-    var closestTypeRecommendation = closestTypeFor(type, allowedTypes);
+    const closestTypeRecommendation = closestTypeFor(type, allowedTypes);
     if (isCloseEnough(closestTypeRecommendation, type)) {
       return 'Did you mean "' + closestTypeRecommendation.type + '"? ';
     } else {
@@ -80,7 +80,7 @@ if (__DEV__) {
   };
 
   var closestTypeFor = function (type, allowedTypes) {
-    var typeRecommendations = allowedTypes.map(
+    const typeRecommendations = allowedTypes.map(
       typeRecommendationFor.bind(this, type)
     );
     return typeRecommendations.sort(recommendationSort)[0];
@@ -108,8 +108,8 @@ if (__DEV__) {
   };
 
   var damerauLevenshteinDistance = function (a, b) {
-    var i, j;
-    var d = [];
+    let i, j;
+    const d = [];
 
     for (i = 0; i <= a.length; i++) {
       d[i] = [i];
@@ -121,7 +121,7 @@ if (__DEV__) {
 
     for (i = 1; i <= a.length; i++) {
       for (j = 1; j <= b.length; j++) {
-        var cost = a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1;
+        const cost = a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1;
 
         d[i][j] = Math.min(
           d[i - 1][j] + 1,

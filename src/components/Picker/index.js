@@ -10,7 +10,8 @@
  */
 'use strict';
 
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import autobind from 'autobind-decorator';
 
 const PICKER = 'picker';
@@ -53,17 +54,31 @@ class Picker extends Component {
   }
 }
 
+class PickerItem extends Component {
+  static propTypes = {
+    value: PropTypes.any,
+    label: PropTypes.string, // string or integer basically
+  }
 
-Picker.Item = React.createClass({
-  propTypes: {
-    value: PropTypes.any, // string or integer basically
-    label: PropTypes.string,
-  },
-
-  render: function () {
+  render() {
     return <option value={this.props.value}>{this.props.label}</option>;
-  },
-});
+  }
+
+}
+
+
+// Picker.Item = React.createClass({
+//   propTypes: {
+//     value: PropTypes.any, // string or integer basically
+//     label: PropTypes.string,
+//   },
+//
+//   render: function () {
+//     return <option value={this.props.value}>{this.props.label}</option>;
+//   },
+// });
+
+Picker.Item = PickerItem
 
 // autobind(Picker);
 

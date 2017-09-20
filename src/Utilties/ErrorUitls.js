@@ -70,7 +70,7 @@
    * when loading a module.
    */
   function setupErrorGuard() {
-    var onError = function (e) {
+    const onError = function (e) {
       global.console.error(
         'Error: ' +
         '\n stack: ' + e.stack +

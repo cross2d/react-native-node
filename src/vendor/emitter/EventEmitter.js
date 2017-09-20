@@ -74,7 +74,7 @@ class EventEmitter {
    *   listener
    */
   once(eventType: String, listener, context: ?Object): EmitterSubscription {
-    var emitter = this;
+    const emitter = this;
     return this.addListener(eventType, function () {
       emitter.removeCurrentListener();
       listener.apply(context, arguments);
@@ -129,7 +129,7 @@ class EventEmitter {
    * @returns {array}
    */
   listeners(eventType: String): Array /* TODO: Array<EventSubscription> */ {
-    var subscriptions = this._subscriber.getSubscriptionsForType(eventType);
+    const subscriptions = this._subscriber.getSubscriptionsForType(eventType);
     return subscriptions
       ? subscriptions.filter(emptyFunction.thatReturnsTrue).map(
       function (subscription) {
@@ -153,12 +153,12 @@ class EventEmitter {
    *   emitter.emit('someEvent', 'abc'); // logs 'abc'
    */
   emit(eventType: String) {
-    var subscriptions = this._subscriber.getSubscriptionsForType(eventType);
+    const subscriptions = this._subscriber.getSubscriptionsForType(eventType);
     if (subscriptions) {
-      var keys = Object.keys(subscriptions);
-      for (var ii = 0; ii < keys.length; ii++) {
-        var key = keys[ii];
-        var subscription = subscriptions[key];
+      const keys = Object.keys(subscriptions);
+      for (let ii = 0; ii < keys.length; ii++) {
+        const key = keys[ii];
+        const subscription = subscriptions[key];
 
         // The subscription may have been removed during this event loop.
         if (subscription) {

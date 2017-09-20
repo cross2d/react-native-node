@@ -1,3 +1,13 @@
+/**
+ * Copyright (c) 2015-present, Nicolas Gallagher.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ */
+
 import { number, oneOf, oneOfType, string } from 'prop-types';
 const OverflowPropType = oneOf(['auto', 'hidden', 'scroll', 'visible']);
 const hiddenOrVisible = oneOf(['hidden', 'visible']);
@@ -55,7 +65,7 @@ const LayoutPropTypes = {
   paddingRight: numberOrString,
   paddingTop: numberOrString,
   paddingVertical: numberOrString,
-  position: oneOf(['absolute', 'fixed', 'relative', 'static']),
+  position: oneOf(['absolute', 'fixed', 'relative', 'static', 'sticky']),
   right: numberOrString,
   top: numberOrString,
   visibility: hiddenOrVisible,
@@ -82,4 +92,4 @@ const LayoutPropTypes = {
   gridTemplateAreas: string
 };
 
-module.exports = LayoutPropTypes;
+export default LayoutPropTypes;

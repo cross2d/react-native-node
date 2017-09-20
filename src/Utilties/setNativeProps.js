@@ -5,45 +5,45 @@
  */
 'use strict';
 
-var CSSPropertyOperations = require('react-dom/lib/CSSPropertyOperations');
+const CSSPropertyOperations = require('react-dom/lib/CSSPropertyOperations');
 
 // some number that react not auto add px
-var numberTransformProperties = {
+const numberTransformProperties = {
   translateX: true,
   translateY: true,
   translateZ: true
 };
 
 function processTransformValue(value, key) {
-  if (numberTransformProperties[key] && typeof value == 'number') {
+  if (numberTransformProperties[key] && typeof value === 'number') {
     value += 'px';
   }
   return value;
 }
 
 function convertTransform(style) {
-  var result = {};
+  const result = {};
   let transform = '';
-  for (var k in style) {
+  for (const k in style) {
     if (k === 'transformMatrix') {
 
       transform += ( 'matrix3d(' + style[k].join(',') + ') ' );
 
     }
     if (k === 'transform') {
-      let value = style[k];
+      const value = style[k];
       if (Array.isArray(value)) {
 
         var transformations = [];
         value.forEach(function (transformation) {
 
-          var key = Object.keys(transformation)[0];
-          var val = transformation[key];
+          let key = Object.keys(transformation)[0];
+          let val = transformation[key];
 
           // translate matrix have an array as the value
           if (Array.isArray(val)) {
 
-            var len = val.length;
+            const len = val.length;
 
             if ((key === 'matrix' && len === 16) || (key === 'translate' && len === 3)) {
               key += '3d';
@@ -76,9 +76,9 @@ function convertTransform(style) {
 
 function setNativeProps(node, props, component) {
 
-  for (var name in props) {
+  for (const name in props) {
     if (name === 'style') {
-      var style = props[name];
+      let style = props[name];
       if ('transformMatrix' in style || 'transform' in style) {
         style = convertTransform(style);
       }

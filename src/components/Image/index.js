@@ -1,6 +1,19 @@
-/* global window */
+/**
+ * Copyright (c) 2016-present, Nicolas Gallagher.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @providesModule Image
+ * @flow
+ */
+
 import applyNativeMethods from '../../modules/applyNativeMethods';
-import createDOMElement from '../../modules/createDOMElement';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import createElement from '../../modules/createElement';
+import { getAssetByID } from '../../modules/AssetRegistry';
 import ImageLoader from '../../modules/ImageLoader';
 import ImageResizeMode from './ImageResizeMode';
 import ImageStylePropTypes from './ImageStylePropTypes';
@@ -10,7 +23,7 @@ import StyleSheet from '../../apis/StyleSheet';
 import StyleSheetPropType from '../../propTypes/StyleSheetPropType';
 import View from '../View';
 import ViewPropTypes from '../View/ViewPropTypes';
-import { any, func, number, oneOf, oneOfType, shape, string } from 'prop-types';
+import { any, bool, func, number, oneOf, oneOfType, shape, string } from 'prop-types';
 import React, { Component } from 'react';
 
 const emptyObject = {};
@@ -22,6 +35,7 @@ const STATUS_PENDING = 'PENDING';
 const STATUS_IDLE = 'IDLE';
 
 const ImageSourcePropType = oneOfType([
+  number,
   shape({
     height: number,
     uri: string.isRequired,
@@ -30,28 +44,60 @@ const ImageSourcePropType = oneOfType([
   string
 ]);
 
-const getImageState = (uri, isPreviouslyLoaded) => {
-  return isPreviouslyLoaded ? STATUS_LOADED : uri ? STATUS_PENDING : STATUS_IDLE;
+const getImageState = (uri, shouldDisplaySource) => {
+  return shouldDisplaySource ? STATUS_LOADED : uri ? STATUS_PENDING : STATUS_IDLE;
 };
 
 const resolveAssetDimensions = source => {
-  if (typeof source === 'object') {
+  if (typeof source === 'number') {
+    const { height, width } = getAssetByID(source);
+    return { height, width };
+  } else if (typeof source === 'object') {
     const { height, width } = source;
     return { height, width };
   }
 };
 
+const svgDataUriPattern = /^data:image\/svg\+xml;/;
 const resolveAssetSource = source => {
-  return (typeof source === 'object' ? source.uri : source) || null;
+  let uri;
+  if (typeof source === 'number') {
+    // get the URI from the packager
+    const asset = getAssetByID(source);
+    const scale = asset.scales[0];
+    const scaleSuffix = scale !== 1 ? `@${scale}x` : '';
+    uri = asset ? `${asset.httpServerLocation}/${asset.name}${scaleSuffix}.${asset.type}` : '';
+  } else if (source && source.uri) {
+    uri = source.uri;
+  } else {
+    uri = source || '';
+  }
+
+  // SVG data may contain characters (e.g., #, ") that need to be escaped
+  if (svgDataUriPattern.test(uri)) {
+    const parts = uri.split('<svg');
+    const [prefix, ...svgFragment] = parts;
+    const svg = encodeURIComponent(`<svg${svgFragment.join('<svg')}`);
+    return `${prefix}${svg}`;
+  }
+
+  return uri;
 };
 
 class Image extends Component {
+  state: { shouldDisplaySource: boolean };
+
   static displayName = 'Image';
+
+  static contextTypes = {
+    isInAParentText: bool
+  };
 
   static propTypes = {
     ...ViewPropTypes,
     children: any,
     defaultSource: ImageSourcePropType,
+    draggable: bool,
     onError: func,
     onLayout: func,
     onLoad: func,
@@ -76,15 +122,19 @@ class Image extends Component {
 
   static resizeMode = ImageResizeMode;
 
+  _imageRequestId = null;
+  _imageState = null;
+  _isMounted = false;
+  _loadRequest = null;
+
   constructor(props, context) {
     super(props, context);
     // If an image has been loaded before, render it immediately
     const uri = resolveAssetSource(props.source);
-    const isPreviouslyLoaded = ImageUriCache.has(uri);
-    this.state = { shouldDisplaySource: isPreviouslyLoaded };
-    this._imageState = getImageState(uri, isPreviouslyLoaded);
-    isPreviouslyLoaded && ImageUriCache.add(uri);
-    this._isMounted = false;
+    const shouldDisplaySource = ImageUriCache.has(uri) || !canUseDOM;
+    this.state = { shouldDisplaySource };
+    this._imageState = getImageState(uri, shouldDisplaySource);
+    shouldDisplaySource && ImageUriCache.add(uri);
   }
 
   componentDidMount() {
@@ -124,6 +174,7 @@ class Image extends Component {
       accessible,
       children,
       defaultSource,
+      draggable,
       onLayout,
       source,
       testID,
@@ -148,16 +199,21 @@ class Image extends Component {
       imageSizeStyle,
       originalStyle,
       resizeModeStyles[finalResizeMode],
+      this.context.isInAParentText && styles.inline,
       backgroundImage && { backgroundImage }
     ]);
-    // View doesn't support 'resizeMode' as a style
+    // View doesn't support these styles
+    delete style.overlayColor;
     delete style.resizeMode;
+    delete style.tintColor;
 
     // Allows users to trigger the browser's image context menu
     const hiddenImage = displayImage
-      ? createDOMElement('img', {
+      ? createElement('img', {
+          alt: accessibilityLabel || '',
+          draggable,
           src: displayImage,
-          style: [StyleSheet.absoluteFill, styles.img]
+          style: styles.img
         })
       : null;
 
@@ -257,7 +313,11 @@ const styles = StyleSheet.create({
     backgroundSize: 'cover',
     zIndex: 0
   },
+  inline: {
+    display: 'inline-flex'
+  },
   img: {
+    ...StyleSheet.absoluteFillObject,
     height: '100%',
     opacity: 0,
     width: '100%',
@@ -288,4 +348,4 @@ const resizeModeStyles = StyleSheet.create({
   }
 });
 
-module.exports = applyNativeMethods(Image);
+export default applyNativeMethods(Image);

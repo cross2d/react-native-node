@@ -48,8 +48,8 @@ class EventHolder {
    */
   holdEvent(eventType: String, a, b, c, d, e, _) {
     this._heldEvents[eventType] = this._heldEvents[eventType] || [];
-    var eventsOfType = this._heldEvents[eventType];
-    var key = {
+    const eventsOfType = this._heldEvents[eventType];
+    const key = {
       eventType: eventType,
       index: eventsOfType.length
     };
@@ -66,11 +66,11 @@ class EventHolder {
    *   the listener
    */
   emitToListener(eventType: ?String, listener, context: ?Object) {
-    var eventsOfType = this._heldEvents[eventType];
+    const eventsOfType = this._heldEvents[eventType];
     if (!eventsOfType) {
       return;
     }
-    var origEventKey = this._currentEventKey;
+    const origEventKey = this._currentEventKey;
     eventsOfType.forEach((/* ?array */ eventHeld, /* number */ index) => {
       if (!eventHeld) {
         return;

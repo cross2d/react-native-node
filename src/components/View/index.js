@@ -1,13 +1,20 @@
-import AccessibilityUtil from '../../modules/AccessibilityUtil';
+/**
+ * Copyright (c) 2015-present, Nicolas Gallagher.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * @providesModule View
+ * @flow
+ */
+
 import applyLayout from '../../modules/applyLayout';
 import applyNativeMethods from '../../modules/applyNativeMethods';
 import { bool } from 'prop-types';
-import createDOMElement from '../../modules/createDOMElement';
+import createElement from '../../modules/createElement';
+import invariant from 'fbjs/lib/invariant';
 import StyleSheet from '../../apis/StyleSheet';
 import ViewPropTypes from './ViewPropTypes';
 import React, { Component } from 'react';
-
-const emptyObject = {};
 
 const calculateHitSlopStyle = hitSlop => {
   const hitStyle = {};
@@ -23,21 +30,11 @@ const calculateHitSlopStyle = hitSlop => {
 class View extends Component {
   static displayName = 'View';
 
-  static propTypes = ViewPropTypes;
-
-  static childContextTypes = {
-    isInAButtonView: bool
-  };
-
   static contextTypes = {
-    isInAButtonView: bool
+    isInAParentText: bool
   };
 
-  getChildContext() {
-    const isInAButtonView =
-      AccessibilityUtil.propsToAriaRole(this.props) === 'button' || this.context.isInAButtonView;
-    return isInAButtonView ? { isInAButtonView } : emptyObject;
-  }
+  static propTypes = ViewPropTypes;
 
   render() {
     const {
@@ -53,20 +50,25 @@ class View extends Component {
       ...otherProps
     } = this.props;
 
-    const { isInAButtonView } = this.context;
+    if (process.env.NODE_ENV !== 'production') {
+      React.Children.toArray(this.props.children).forEach(item => {
+        invariant(typeof item !== 'string', 'A text node cannot be a child of a <View>');
+      });
+    }
 
-    otherProps.style = [styles.initial, style];
+    const { isInAParentText } = this.context;
+
+    otherProps.style = [styles.initial, isInAParentText && styles.inline, style];
 
     if (hitSlop) {
       const hitSlopStyle = calculateHitSlopStyle(hitSlop);
-      const hitSlopChild = createDOMElement('span', { style: [styles.hitSlop, hitSlopStyle] });
+      const hitSlopChild = createElement('span', { style: [styles.hitSlop, hitSlopStyle] });
       otherProps.children = React.Children.toArray(otherProps.children);
       otherProps.children.unshift(hitSlopChild);
       otherProps.style.unshift(styles.hasHitSlop);
     }
 
-    const component = isInAButtonView ? 'span' : 'div';
-    return createDOMElement(component, otherProps);
+    return createElement('div', otherProps);
   }
 }
 
@@ -78,7 +80,6 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     boxSizing: 'border-box',
     display: 'flex',
-    flexBasis: 'auto',
     flexDirection: 'column',
     margin: 0,
     padding: 0,
@@ -87,7 +88,10 @@ const styles = StyleSheet.create({
     minHeight: 0,
     minWidth: 0
   },
-  // this zIndex ordering positions the hitSlop above the View but behind
+  inline: {
+    display: 'inline-flex'
+  },
+  // this zIndex-ordering positions the hitSlop above the View but behind
   // its children
   hasHitSlop: {
     zIndex: 0
@@ -98,4 +102,4 @@ const styles = StyleSheet.create({
   }
 });
 
-module.exports = applyLayout(applyNativeMethods(View));
+export default applyLayout(applyNativeMethods(View));

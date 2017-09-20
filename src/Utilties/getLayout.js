@@ -8,7 +8,7 @@
 
 // get element x, y
 function getCumulativeOffset(obj) {
-  var left, top;
+  let left, top;
   left = top = 0;
   if (obj.offsetParent) {
     do {
@@ -24,7 +24,7 @@ function getCumulativeOffset(obj) {
 
 // this functions returns the x, y, width and height of a given dom node
 function getLayout(element) {
-  var rect = getCumulativeOffset(element);
+  const rect = getCumulativeOffset(element);
   return {
     x: rect.x,
     y: rect.y,

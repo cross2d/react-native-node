@@ -49,8 +49,8 @@ class AlertIOS {
     }>,
     type?: ?string
   ): void {
-    let callbacks = [];
-    let buttonsSpec = [];
+    const callbacks = [];
+    const buttonsSpec = [];
     title = title || '';
     message = message || '';
     buttons = buttons || [DEFAULT_BUTTON];
@@ -58,7 +58,7 @@ class AlertIOS {
 
     buttons.forEach((btn, index) => {
       callbacks[index] = btn.onPress;
-      let btnDef = {};
+      const btnDef = {};
       btnDef[index] = btn.text || DEFAULT_BUTTON_TEXT;
       buttonsSpec.push(btnDef);
     });
@@ -67,7 +67,7 @@ class AlertIOS {
     const cancelCallback = callbacks.pop() || noop;
     let totalMsg = message;
     if(title!=''){
-      totalMsg=title+":"+message;
+      totalMsg=title+':'+message;
     }
     if (buttons.length === 1) {
       alert(totalMsg);
@@ -114,7 +114,7 @@ class AlertIOS {
       }];
     }
 
-    let ret = prompt(title);
+    const ret = prompt(title);
     if (ret && callback) {
       callback();
     }

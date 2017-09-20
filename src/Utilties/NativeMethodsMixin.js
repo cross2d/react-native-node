@@ -11,7 +11,7 @@ import UIManager from './UIManager';
 import ReactDOM from 'react-dom';
 import setNativeProps from './setNativeProps';
 
-var NativeMethodsMixin = {
+const NativeMethodsMixin = {
   /**
    * Determines the location on screen, width, and height of the given view and
    * returns the values via an async callback. If successful, the callback will

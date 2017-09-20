@@ -1,16 +1,30 @@
+/**
+ * Copyright (c) 2015-present, Nicolas Gallagher.
+ * Copyright (c) 2015-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @providesModule TextInput
+ * @flow
+ */
+
 import applyLayout from '../../modules/applyLayout';
 import applyNativeMethods from '../../modules/applyNativeMethods';
+import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
 import { Component } from 'react';
-import NativeMethodsMixin from '../../modules/NativeMethodsMixin';
-import createDOMElement from '../../modules/createDOMElement';
+import ColorPropType from '../../propTypes/ColorPropType';
+import createElement from '../../modules/createElement';
 import findNodeHandle from '../../modules/findNodeHandle';
 import StyleSheet from '../../apis/StyleSheet';
 import StyleSheetPropType from '../../propTypes/StyleSheetPropType';
 import TextInputStylePropTypes from './TextInputStylePropTypes';
 import TextInputState from './TextInputState';
 import ViewPropTypes from '../View/ViewPropTypes';
-import { bool, func, number, oneOf, shape, string } from 'prop-types';
+import { any, bool, func, number, oneOf, shape, string } from 'prop-types';
 
+const isAndroid = canUseDOM && /Android/i.test(navigator && navigator.userAgent);
 const emptyObject = {};
 
 /**
@@ -44,12 +58,19 @@ const setSelection = (node, selection) => {
   try {
     if (isSelectionStale(node, selection)) {
       const { start, end } = selection;
-      node.setSelectionRange(start, end || start);
+      // workaround for Blink on Android: see https://github.com/text-mask/text-mask/issues/300
+      if (isAndroid) {
+        setTimeout(() => node.setSelectionRange(start, end || start), 10);
+      } else {
+        node.setSelectionRange(start, end || start);
+      }
     }
   } catch (e) {}
 };
 
 class TextInput extends Component {
+  _node: HTMLInputElement;
+
   static displayName = 'TextInput';
 
   static propTypes = {
@@ -83,7 +104,6 @@ class TextInput extends Component {
     onSelectionChange: func,
     onSubmitEditing: func,
     placeholder: string,
-    placeholderTextColor: string,
     secureTextEntry: bool,
     selectTextOnFocus: bool,
     selection: shape({
@@ -91,7 +111,29 @@ class TextInput extends Component {
       end: number
     }),
     style: StyleSheetPropType(TextInputStylePropTypes),
-    value: string
+    value: string,
+    /* react-native compat */
+    /* eslint-disable */
+    caretHidden: bool,
+    clearButtonMode: string,
+    dataDetectorTypes: string,
+    disableFullscreenUI: bool,
+    enablesReturnKeyAutomatically: bool,
+    keyboardAppearance: string,
+    inlineImageLeft: string,
+    inlineImagePadding: number,
+    onContentSizeChange: func,
+    onEndEditing: func,
+    onScroll: func,
+    placeholderTextColor: ColorPropType,
+    returnKeyLabel: string,
+    returnKeyType: string,
+    selectionColor: ColorPropType,
+    selectionState: any,
+    spellCheck: bool,
+    textBreakStrategy: string,
+    underlineColorAndroid: ColorPropType
+    /* eslint-enable */
   };
 
   static defaultProps = {
@@ -124,10 +166,6 @@ class TextInput extends Component {
     return TextInputState.currentlyFocusedField() === this._node;
   }
 
-  setNativeProps(props) {
-    NativeMethodsMixin.setNativeProps.call(this, props);
-  }
-
   componentDidMount() {
     setSelection(this._node, this.props.selection);
   }
@@ -147,23 +185,30 @@ class TextInput extends Component {
       style,
       /* eslint-disable */
       blurOnSubmit,
-      caretHidden,
-      clearButtonMode,
       clearTextOnFocus,
-      dataDetectorTypes,
-      enablesReturnKeyAutomatically,
-      keyboardAppearance,
       onChangeText,
-      onContentSizeChange,
-      onEndEditing,
-      onLayout,
       onSelectionChange,
       onSubmitEditing,
-      placeholderTextColor,
-      returnKeyType,
       selection,
-      selectionColor,
       selectTextOnFocus,
+      /* react-native compat */
+      caretHidden,
+      clearButtonMode,
+      dataDetectorTypes,
+      disableFullscreenUI,
+      enablesReturnKeyAutomatically,
+      inlineImageLeft,
+      inlineImagePadding,
+      keyboardAppearance,
+      onContentSizeChange,
+      onEndEditing,
+      onScroll,
+      placeholderTextColor,
+      returnKeyLabel,
+      returnKeyType,
+      selectionColor,
+      selectionState,
+      spellCheck,
       textBreakStrategy,
       underlineColorAndroid,
       /* eslint-enable */
@@ -206,7 +251,8 @@ class TextInput extends Component {
       onBlur: normalizeEventHandler(this._handleBlur),
       onChange: normalizeEventHandler(this._handleChange),
       onFocus: normalizeEventHandler(this._handleFocus),
-      onKeyPress: normalizeEventHandler(this._handleKeyPress),
+      onKeyDown: this._handleKeyDown,
+      onKeyPress: this._handleKeyPress,
       onSelect: normalizeEventHandler(this._handleSelectionChange),
       readOnly: !editable,
       ref: this._setNode,
@@ -219,7 +265,7 @@ class TextInput extends Component {
       otherProps.type = type;
     }
 
-    return createDOMElement(component, otherProps);
+    return createElement(component, otherProps);
   }
 
   _handleBlur = e => {
@@ -254,15 +300,68 @@ class TextInput extends Component {
     }
   };
 
+  _handleKeyDown = e => {
+    // prevent key events bubbling (see #612)
+    e.stopPropagation();
+
+    // Backspace, Tab, and Cmd+Enter only fire 'keydown' DOM events
+    if (e.which === 8 || e.which === 9 || (e.which === 13 && e.metaKey)) {
+      this._handleKeyPress(e);
+    }
+  };
+
   _handleKeyPress = e => {
     const { blurOnSubmit, multiline, onKeyPress, onSubmitEditing } = this.props;
     const blurOnSubmitDefault = !multiline;
     const shouldBlurOnSubmit = blurOnSubmit == null ? blurOnSubmitDefault : blurOnSubmit;
+
     if (onKeyPress) {
-      onKeyPress(e);
+      let keyValue;
+      switch (e.which) {
+        // backspace
+        case 8:
+          keyValue = 'Backspace';
+          break;
+        // tab
+        case 9:
+          keyValue = 'Tab';
+          break;
+        // enter
+        case 13:
+          keyValue = 'Enter';
+          break;
+        // spacebar
+        case 32:
+          keyValue = ' ';
+          break;
+        default: {
+          // we trim to only care about the keys that has a textual representation
+          if (e.shiftKey) {
+            keyValue = String.fromCharCode(e.which).trim();
+          } else {
+            keyValue = String.fromCharCode(e.which)
+              .toLowerCase()
+              .trim();
+          }
+        }
+      }
+
+      if (keyValue) {
+        e.nativeEvent = {
+          altKey: e.altKey,
+          ctrlKey: e.ctrlKey,
+          key: keyValue,
+          metaKey: e.metaKey,
+          shiftKey: e.shiftKey,
+          target: e.target
+        };
+        onKeyPress(e);
+      }
     }
-    if (!e.isDefaultPrevented() && e.which === 13) {
-      if (onSubmitEditing) {
+
+    if (!e.isDefaultPrevented() && e.which === 13 && !e.shiftKey) {
+      if ((blurOnSubmit || !multiline) && onSubmitEditing) {
+        e.nativeEvent = { target: e.target, text: e.target.value };
         onSubmitEditing(e);
       }
       if (shouldBlurOnSubmit) {
@@ -308,4 +407,4 @@ const styles = StyleSheet.create({
   }
 });
 
-module.exports = applyLayout(applyNativeMethods(TextInput));
+export default applyLayout(applyNativeMethods(TextInput));

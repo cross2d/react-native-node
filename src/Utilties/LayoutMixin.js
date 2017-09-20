@@ -10,7 +10,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import getLayout from 'ReactGetLayout';
 
-var LayoutMixin = {
+const LayoutMixin = {
   getInitialState: function () {
     return {layout: {}};
   },
@@ -26,8 +26,8 @@ var LayoutMixin = {
   layoutHandle: function () {
     if (this.props.onLayout) {
 
-      var layout = getLayout(ReactDOM.findDOMNode(this));
-      var stateLayout = this.state.layout;
+      const layout = getLayout(ReactDOM.findDOMNode(this));
+      const stateLayout = this.state.layout;
       if (stateLayout.x !== layout.x || stateLayout.y !== layout.y || stateLayout.width !== layout.width || stateLayout.height !== layout.height) {
         this.props.onLayout({nativeEvent: {layout}});
         this.setState({layout});
