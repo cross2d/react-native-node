@@ -10,6 +10,7 @@
  * @noflow
  */
 
+
 import applyNativeMethods from '../../modules/applyNativeMethods';
 import createReactClass from 'create-react-class';
 import ensurePositiveDelayProps from './ensurePositiveDelayProps';
@@ -194,6 +195,7 @@ const TouchableOpacity = createReactClass({
       </View>
     );
   }
+
 });
 
 const styles = StyleSheet.create({
