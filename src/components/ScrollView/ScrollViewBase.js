@@ -60,12 +60,14 @@ export default class ScrollViewBase extends Component {
     onWheel: func,
     removeClippedSubviews: bool,
     scrollEnabled: bool,
+    pagingEnabled:bool,
     scrollEventThrottle: number,
     showsHorizontalScrollIndicator: bool,
     showsVerticalScrollIndicator: bool
   };
 
   static defaultProps = {
+    pagingEnabled:false,
     scrollEnabled: true,
     scrollEventThrottle: 0
   };
@@ -106,6 +108,7 @@ export default class ScrollViewBase extends Component {
   _handleScrollStart(e: Object) {
     this._state.isScrolling = true;
     this._state.scrollLastTick = Date.now();
+    this.props.onMomentumScrollBegin && this.props.onMomentumScrollBegin(normalizeScrollEvent(e))
   }
 
   _handleScrollTick(e: Object) {
@@ -117,11 +120,16 @@ export default class ScrollViewBase extends Component {
   }
 
   _handleScrollEnd(e: Object) {
-    const { onScroll } = this.props;
+    const { onScroll,pagingEnabled } = this.props;
     this._state.isScrolling = false;
     if (onScroll) {
       onScroll(normalizeScrollEvent(e));
     }
+    if(pagingEnabled){
+      //处理页面位置
+
+    }
+    this.props.onMomentumScrollEnd && this.props.onMomentumScrollEnd(normalizeScrollEvent(e))
   }
 
   _shouldEmitScrollEvent(lastTick: number, eventThrottle: number) {

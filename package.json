@@ -1,6 +1,6 @@
 {
   "name": "@cross2d/react-native-node",
-  "version": "0.0.11",
+  "version": "0.0.15",
   "base-version": "0.0.126",
   "description": "React Native for NodeJS",
   "main": "dist/index.js",
