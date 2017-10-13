@@ -53,6 +53,13 @@ const EventValidator = {
   }
 };
 
+let recommendationFor = null;
+let closestTypeFor = null;
+let typeRecommendationFor = null;
+let recommendationSort = null;
+let isCloseEnough = null;
+let damerauLevenshteinDistance = null;
+
 function assertAllowsEventType(type, allowedTypes) {
   if (allowedTypes.indexOf(type) === -1) {
     throw new TypeError(errorMessageFor(type, allowedTypes));
@@ -70,7 +77,7 @@ function errorMessageFor(type, allowedTypes) {
 
 // Allow for good error messages
 if (__DEV__) {
-  var recommendationFor = function (type, allowedTypes) {
+  recommendationFor = function (type, allowedTypes) {
     const closestTypeRecommendation = closestTypeFor(type, allowedTypes);
     if (isCloseEnough(closestTypeRecommendation, type)) {
       return 'Did you mean "' + closestTypeRecommendation.type + '"? ';
@@ -79,21 +86,21 @@ if (__DEV__) {
     }
   };
 
-  var closestTypeFor = function (type, allowedTypes) {
+  closestTypeFor = function (type, allowedTypes) {
     const typeRecommendations = allowedTypes.map(
       typeRecommendationFor.bind(this, type)
     );
     return typeRecommendations.sort(recommendationSort)[0];
   };
 
-  var typeRecommendationFor = function (type, recomendedType) {
+  typeRecommendationFor = function (type, recomendedType) {
     return {
       type: recomendedType,
       distance: damerauLevenshteinDistance(type, recomendedType)
     };
   };
 
-  var recommendationSort = function (recommendationA, recommendationB) {
+  recommendationSort = function (recommendationA, recommendationB) {
     if (recommendationA.distance < recommendationB.distance) {
       return -1;
     } else if (recommendationA.distance > recommendationB.distance) {
@@ -103,11 +110,11 @@ if (__DEV__) {
     }
   };
 
-  var isCloseEnough = function (closestType, actualType) {
+  isCloseEnough = function (closestType, actualType) {
     return (closestType.distance / actualType.length) < 0.334;
   };
 
-  var damerauLevenshteinDistance = function (a, b) {
+  damerauLevenshteinDistance = function (a, b) {
     let i, j;
     const d = [];
 
@@ -130,8 +137,8 @@ if (__DEV__) {
         );
 
         if (i > 1 && j > 1 &&
-          a.charAt(i - 1) == b.charAt(j - 2) &&
-          a.charAt(i - 2) == b.charAt(j - 1)) {
+          a.charAt(i - 1) === b.charAt(j - 2) &&
+          a.charAt(i - 2) === b.charAt(j - 1)) {
           d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + cost);
         }
       }

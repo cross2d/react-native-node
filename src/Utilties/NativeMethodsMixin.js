@@ -6,7 +6,7 @@
  */
 'use strict';
 
-import UIManager from './UIManager';
+import UIManager from './../apis/UIManager';
 
 import ReactDOM from 'react-dom';
 import setNativeProps from './setNativeProps';
@@ -83,7 +83,7 @@ const NativeMethodsMixin = {
  * In the future, we should cleanup callbacks by cancelling them instead of
  * using this.
  */
-var mountSafeCallback = function (context, callback) {
+const mountSafeCallback = function (context, callback) {
   return function () {
     if (!callback || context.isMounted && !context.isMounted()) {
       return;

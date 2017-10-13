@@ -14,8 +14,21 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import StyleSheet from '../../apis/StyleSheet';
 import View from '../View';
+import ViewPropTypes from '../View/ViewPropTypes';
 
 class Modal extends Component {
+
+  static propTypes = {
+    ...ViewPropTypes,
+    animated: PropTypes.bool,
+    onDismiss: PropTypes.func,
+    transparent: PropTypes.bool,
+    visible:PropTypes.bool,
+  };
+
+  static defaultProps = {
+  };
+
   render(): ?ReactElement {
     if (this.props.visible === false) {
       if (this.shown) {
@@ -27,8 +40,9 @@ class Modal extends Component {
 
     this.shown = true;
 
+    let modalBackgroundColor = null;
     if (this.props.transparent) {
-      var modalBackgroundColor = {backgroundColor: 'transparent'};
+      modalBackgroundColor = {backgroundColor: 'transparent'};
     }
 
     return (
@@ -40,12 +54,6 @@ class Modal extends Component {
     );
   }
 }
-
-Modal.propTypes = {
-  animated: PropTypes.bool,
-  transparent: PropTypes.bool,
-  onDismiss: PropTypes.func,
-};
 
 const styles = StyleSheet.create({
   modal: {

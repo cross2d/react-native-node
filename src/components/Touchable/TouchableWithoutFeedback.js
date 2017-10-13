@@ -19,7 +19,7 @@ import StyleSheet from '../../apis/StyleSheet';
 import TimerMixin from 'react-timer-mixin';
 import Touchable from './Touchable';
 import warning from 'fbjs/lib/warning';
-import { bool, func, number, string } from 'prop-types';
+import { any, bool, func, number, string } from 'prop-types';
 
 type Event = Object;
 
@@ -44,6 +44,7 @@ const TouchableWithoutFeedback = createReactClass({
     accessibilityRole: BaseComponentPropTypes.accessibilityRole,
     accessibilityTraits: BaseComponentPropTypes.accessibilityTraits,
     accessible: bool,
+    children: any,
     /**
      * Delay in ms, from onPressIn, before onLongPress is called.
      */
@@ -160,7 +161,7 @@ const TouchableWithoutFeedback = createReactClass({
     } = this.props;
 
     // Note(avik): remove dynamic typecast once Flow has been upgraded
-    // $FlowFixMe
+
     const child = React.Children.only(this.props.children);
     let children = child.props.children;
     warning(

@@ -27,7 +27,7 @@ class EventSubscription {
    * @param {EventSubscriptionVendor} subscriber the subscriber that controls
    *   this subscription.
    */
-  constructor(subscriber: EventSubscriptionVendor) {
+  constructor(subscriber) {
     this.subscriber = subscriber;
   }
 

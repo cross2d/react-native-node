@@ -46,35 +46,9 @@ const TYPES_KEY = keyOf({__types: true});
  * mixInEventEmitter(Singleton, {lonely: true});
  * Singleton.emit('lonely', true);
  */
-function mixInEventEmitter(klass, types) {
-  invariant(types, 'Must supply set of valid event types');
-  invariant(!this.__eventEmitter, 'An active emitter is already mixed in');
 
-  // If this is a constructor, write to the prototype, otherwise write to the
-  // singleton object.
-  const target = klass.prototype || klass;
 
-  const ctor = klass.constructor;
-  if (ctor) {
-    invariant(
-      ctor === Object || ctor === Function,
-      'Mix EventEmitter into a class, not an instance'
-    );
-  }
-
-  // Keep track of the provided types, union the types if they already exist,
-  // which allows for prototype subclasses to provide more types.
-  if (target.hasOwnProperty(TYPES_KEY)) {
-    copyProperties(target.__types, types);
-  } else if (target.__types) {
-    target.__types = copyProperties({}, target.__types, types);
-  } else {
-    target.__types = types;
-  }
-  copyProperties(target, EventEmitterMixin);
-}
-
-var EventEmitterMixin = {
+const EventEmitterMixin = {
   emit: function (eventType, a, b, c, d, e, _) {
     return this.__getEventEmitter().emit(eventType, a, b, c, d, e, _);
   },
@@ -130,5 +104,33 @@ var EventEmitterMixin = {
     return this.__eventEmitter;
   }
 };
+
+function mixInEventEmitter(klass, types) {
+  invariant(types, 'Must supply set of valid event types');
+  invariant(!this.__eventEmitter, 'An active emitter is already mixed in');
+
+  // If this is a constructor, write to the prototype, otherwise write to the
+  // singleton object.
+  const target = klass.prototype || klass;
+
+  const ctor = klass.constructor;
+  if (ctor) {
+    invariant(
+      ctor === Object || ctor === Function,
+      'Mix EventEmitter into a class, not an instance'
+    );
+  }
+
+  // Keep track of the provided types, union the types if they already exist,
+  // which allows for prototype subclasses to provide more types.
+  if (target.hasOwnProperty(TYPES_KEY)) {
+    copyProperties(target.__types, types);
+  } else if (target.__types) {
+    target.__types = copyProperties({}, target.__types, types);
+  } else {
+    target.__types = types;
+  }
+  copyProperties(target, EventEmitterMixin);
+}
 
 module.exports = mixInEventEmitter;

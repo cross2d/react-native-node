@@ -5,7 +5,7 @@
  */
 'use strict';
 
-const CSSPropertyOperations = require('react-dom/lib/CSSPropertyOperations');
+import setValueForStyles from '../vendor/setValueForStyles'
 
 // some number that react not auto add px
 const numberTransformProperties = {
@@ -34,8 +34,8 @@ function convertTransform(style) {
       const value = style[k];
       if (Array.isArray(value)) {
 
-        var transformations = [];
-        value.forEach(function (transformation) {
+        const transformations = [];
+        value.forEach((transformation)=>{
 
           let key = Object.keys(transformation)[0];
           let val = transformation[key];
@@ -83,7 +83,7 @@ function setNativeProps(node, props, component) {
         style = convertTransform(style);
       }
 
-      CSSPropertyOperations.setValueForStyles(node, style, component);
+      setValueForStyles(node, style, component);
     } else {
       node.setAttribute(name, props[name]);
     }

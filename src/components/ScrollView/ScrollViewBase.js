@@ -58,9 +58,9 @@ export default class ScrollViewBase extends Component {
     onScrollEndDrag: func,
     onTouchMove: func,
     onWheel: func,
+    pagingEnabled:bool,
     removeClippedSubviews: bool,
     scrollEnabled: bool,
-    pagingEnabled:bool,
     scrollEventThrottle: number,
     showsHorizontalScrollIndicator: bool,
     showsVerticalScrollIndicator: bool

@@ -32,7 +32,7 @@ class EmitterSubscription extends EventSubscription {
    * @param {*} context - Optional context object to use when invoking the
    *   listener
    */
-  constructor(subscriber: EventSubscriptionVendor, listener, context: ?Object) {
+  constructor(subscriber, listener, context: ?Object) {
     super(subscriber);
     this.listener = listener;
     this.context = context;

@@ -12,19 +12,22 @@
 
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import autobind from 'autobind-decorator';
-
-const PICKER = 'picker';
+import ViewPropTypes from '../View/ViewPropTypes';
 
 class Picker extends Component {
   static propTypes = {
+    ...ViewPropTypes,
+    onChange:PropTypes.bool,
     onValueChange: PropTypes.func,
     selectedValue: PropTypes.any, // string or integer basically
   }
 
-  onChange(event) {
+  onChange=(event)=> {
     // shim the native event
-    event.nativeEvent.newValue = this.refs[PICKER].value;
+    if(this._pickRef!=null){
+      event.nativeEvent.newValue = this._pickRef.value;
+    }
+
 
     if (this.props.onChange) {
       this.props.onChange(event);
@@ -35,18 +38,23 @@ class Picker extends Component {
     }
   }
 
+
+  _setPickerRef = element => {
+    this._pickRef = element;
+  };
+
   render() {
     return (
       <select
-        ref={PICKER}
-        value={this.props.selectedValue}
+        onChange={this.onChange}
+        ref={this._setPickerRef}
         style={{
           margin: 10,
           color: 'inherit',
           font: 'inherit',
           ...this.props.style
         }}
-        onChange={this.onChange.bind(this)}
+        value={this.props.selectedValue}
       >
         {this.props.children}
       </select>
@@ -56,8 +64,8 @@ class Picker extends Component {
 
 class PickerItem extends Component {
   static propTypes = {
-    value: PropTypes.any,
-    label: PropTypes.string, // string or integer basically
+    label: PropTypes.string, // string or integer basically,
+    value: PropTypes.any
   }
 
   render() {

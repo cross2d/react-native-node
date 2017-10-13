@@ -118,6 +118,7 @@ describe('components/Image', () => {
       // initial render
       const component = mount(<Image source={{ uri: uriOne }} />);
       ImageUriCache.remove(uriOne);
+
       expect(
         component
           .render()

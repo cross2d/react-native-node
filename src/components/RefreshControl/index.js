@@ -1,17 +1,25 @@
 /**
  * Created by colin on 2017/6/6.
  */
+
 'use strict';
 
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import ActivityIndicator from './../ActivityIndicator';
 import { Mixin as NativeMethodsMixin } from './../../Utilties/NativeMethodsMixin';
 import mixin from 'react-mixin';
 import autobind from 'autobind-decorator';
+import ViewPropTypes from '../View/ViewPropTypes';
 
 const RefreshLayoutConsts = {SIZE: {}};
 
 class RefreshControl extends Component {
+
+  static propTypes =  {
+    ...ViewPropTypes,
+    refreshing:PropTypes.bool
+  }
 
   static SIZE = RefreshLayoutConsts.SIZE
 
@@ -31,13 +39,17 @@ class RefreshControl extends Component {
     }
   }
 
+  _setActivityIndicatorRef = element => {
+    this._nativeRef = element;
+  };
+
   render() {
     // TODO
     return (
       <ActivityIndicator
         {...this.props}
-        ref={ref => this._nativeRef = ref}
         onRefresh={this._onRefresh}
+        ref={ this._setActivityIndicatorRef }
       />
     );
   }

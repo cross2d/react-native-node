@@ -66,14 +66,14 @@ class AlertIOS {
     const confirmCallback = callbacks.pop() || noop;
     const cancelCallback = callbacks.pop() || noop;
     let totalMsg = message;
-    if(title!=''){
+    if(title!==''){
       totalMsg=title+':'+message;
     }
     if (buttons.length === 1) {
-      alert(totalMsg);
+      window.alert(totalMsg);
       confirmCallback();
     } else if (buttons.length === 2) {
-      if (confirm(totalMsg)) {
+      if (window.confirm(totalMsg)) {
         confirmCallback();
       } else {
         cancelCallback();
@@ -114,7 +114,7 @@ class AlertIOS {
       }];
     }
 
-    const ret = prompt(title);
+    const ret = window.prompt(title);
     if (ret && callback) {
       callback();
     }

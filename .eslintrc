@@ -24,7 +24,17 @@
   "globals": {
     "document": false,
     "navigator": false,
-    "window": false
+    "window": false,
+    // Flow global types
+    "HTMLInputElement": false,
+    "ReactClass": false,
+    "ReactComponent": false,
+    "ReactElement": false,
+    "ReactPropsChainableTypeChecker": false,
+    "ReactPropsCheckType": false,
+    "ReactPropTypes": false,
+    "SyntheticEvent": false,
+    "__DEV__": [true, true]
   },
   "rules": {
     "camelcase": 0,
@@ -47,7 +57,6 @@
     "no-dupe-class-members": 2,
     "no-dupe-keys": 2,
     "no-duplicate-case": 2,
-    "no-duplicate-imports": 2,
     "no-empty-character-class": 2,
     "no-empty-pattern": 2,
     "no-eval": 2,
@@ -108,7 +117,7 @@
     "no-var": 2,
     "no-with": 2,
     "prefer-const": 2,
-    "prefer-rest-params": 2,
+    "prefer-rest-params": 0,
     "quotes": [2, "single", "avoid-escape"],
     "radix": 2,
     "use-isnan": 2,
@@ -120,9 +129,6 @@
 
     // react
     "react/display-name": 0,
-    "react/jsx-handler-names": [2, {
-      "eventHandlerPrefix": "_handle"
-    }],
     "react/jsx-no-bind": 2,
     "react/jsx-no-duplicate-props": 2,
     "react/jsx-no-undef": 2,

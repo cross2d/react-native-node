@@ -9,8 +9,9 @@
  */
 
 /* eslint global-strict:0 */
+let ErrorUtils = null;
 (function (global) {
-  var ErrorUtils = {
+  ErrorUtils = {
     _inGuard: 0,
     _globalHandler: null,
     setGlobalHandler: function (fun) {
