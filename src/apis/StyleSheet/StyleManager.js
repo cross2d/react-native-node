@@ -100,7 +100,7 @@ export default class StyleManager {
     const styleSheets = this.getStyleSheets();
     return styleSheets
       .map(sheet => {
-        return `<style id="${sheet.id}">\n${sheet.textContent}\n</style>`;
+        return `<style media="print" id="${sheet.id}">\n${sheet.textContent}\n</style>`;
       })
       .join('\n');
   }

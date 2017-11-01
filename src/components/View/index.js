@@ -71,6 +71,7 @@ class View extends Component {
       otherProps.style.unshift(styles.hasHitSlop);
     }
 
+
     return createElement('div', otherProps);
   }
 }
