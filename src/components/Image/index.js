@@ -140,6 +140,9 @@ class Image extends Component {
     this._isMounted = true;
     if (this._imageState === STATUS_PENDING) {
       this._createImageLoader();
+    }else if(this.state.shouldDisplaySource){
+      //fixed cached image not call onLoadEnd Event.
+      this._onLoadEnd()
     }
   }
 
